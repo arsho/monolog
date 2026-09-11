@@ -9,24 +9,22 @@ streaming study, and the GPUlog comparison are covered.
 > **12.4+** (conditional graph nodes). GPUlog builds under 12.x/13.x once C++17
 > is forced — see [GPUlog comparison](#4-gpulog-comparison).
 >
-> Full environment record: [`environment.md`](environment.md).
+> Full environment record: {doc}`environment`. Exact instructions for the JLSE
+> A100 nodes, including the scheduler and module commands: {doc}`jlse`.
 
 ## 0. Environment
 
 ```bash
-source environment/modules.sh    # module load cuda/12.9.1; export GPU_ARCH=sm_80
-bash scripts/check_env.sh        # verifies nvcc >= 12.4, GPU arch, VRAM, python deps
-```
+nvcc --version                   # must be >= 12.4
+nvidia-smi                       # confirm the GPU and its memory
+export GPU_ARCH=sm_80            # sm_80 = A100, sm_90 = H100, or native
 
-Or manually:
-
-```bash
-module load cuda/12.9.1          # provides nvcc; A100 is sm_80
-module list                      # confirm cuda/12.9.1 is the ACTIVE CUDA
-nvcc --version
-nvidia-smi                       # confirm an A100-PCIE-40GB is visible
 python3 -m pip install -r requirements.txt   # matplotlib etc., for `make plot`
+bash scripts/check_env.sh        # verifies nvcc, arch, VRAM, datasets, python deps
 ```
+
+On a cluster where CUDA comes from environment modules, load it first;
+`environment/modules.sh` does that and warns about toolchain conflicts.
 
 Notes:
 
@@ -156,7 +154,7 @@ bash scripts/run_all.sh
 which is equivalent to:
 
 ```bash
-source environment/modules.sh
+export GPU_ARCH=sm_80
 bash scripts/setup_gdlog.sh
 
 for b in tc_benchmark sg_benchmark cc_benchmark; do

@@ -12,11 +12,13 @@ minimum requirements for reproducing them elsewhere.
 | GPU | **NVIDIA A100-PCIE, 40 GB** (Ampere, `sm_80`) |
 | GPUs used | 1 (this artifact is single-GPU by construction) |
 
+Scheduler and module commands for that machine: {doc}`jlse`.
+
 ## Software (as used for the paper)
 
 | Component | Version |
 |-----------|---------|
-| CUDA Toolkit | **12.9.1** (`module load cuda/12.9.1`) |
+| CUDA Toolkit | **12.9.1** |
 | `nvcc` target | `-arch=sm_80 -O3 -std=c++17 --extended-lambda` |
 | Host compiler | system default (no `gcc` module needed for `-std=c++17`) |
 | Thrust / CUB | as shipped with CUDA 12.9.1 (used by `v0_reference`) |
@@ -37,14 +39,21 @@ minimum requirements for reproducing them elsewhere.
 ## Setting up
 
 ```bash
-source environment/modules.sh                # module load + GPU_ARCH
-bash   scripts/check_env.sh                  # verify everything above
+export GPU_ARCH=sm_80                        # sm_80 = A100, sm_90 = H100, or native
 python3 -m pip install -r requirements.txt   # charting deps
+bash scripts/check_env.sh                    # verify everything above
 ```
 
-`environment/modules.sh` is written for an LMod site like JLSE. On a machine
-without modules, drop it and just make sure `nvcc --version` reports ≥ 12.4 and
-export `GPU_ARCH` for your card.
+On a cluster where CUDA comes from environment modules, load it first.
+`environment/modules.sh` does that for an LMod site and warns if `nvhpc` is
+shadowing the CUDA toolkit:
+
+```bash
+CUDA_MODULE=cuda/12.9.1 GPU_ARCH=sm_80 source environment/modules.sh
+```
+
+On a machine without modules, skip it — just confirm `nvcc --version` reports
+≥ 12.4 and export `GPU_ARCH` for your card.
 
 ## Container
 

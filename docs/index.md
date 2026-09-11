@@ -3,10 +3,10 @@
 Single-GPU Datalog engine that evaluates a recursive query as one fused,
 device-resident kernel instead of a chain of relational-algebra operators.
 
-`monolog` implements three recursive graph queries — transitive closure, same
-generation, and weakly connected components — four different ways each, so the
-cost of *how* a fixpoint is executed can be measured in isolation. All four
-versions of a query produce identical results, verified tuple for tuple.
+`monolog` implements three recursive graph applications — transitive closure,
+same generation, and weakly connected components — four different ways each, so
+the cost of *how* a fixpoint is executed can be measured in isolation. All four
+versions produce identical results, verified tuple for tuple.
 
 ```{toctree}
 :maxdepth: 2
@@ -15,6 +15,7 @@ versions of a query produce identical results, verified tuple for tuple.
 quickstart
 environment
 datasets
+jlse
 ```
 
 ```{toctree}
@@ -27,10 +28,10 @@ figure-map
 limitations
 ```
 
-## The three queries
+## Applications
 
-| Query | Directory | Rule |
-|-------|-----------|------|
+| Application | Directory | Rule |
+|-------------|-----------|------|
 | Transitive Closure | `tc_benchmark/` | `path(a,c) :- path(a,b), edge(b,c)` |
 | Same Generation | `sg_benchmark/` | `sg(x,y) :- edge(p,x), edge(p,y), x≠y` ; `sg(x,y) :- edge(a,x), sg(a,b), edge(b,y)` |
 | Weakly Connected Components | `cc_benchmark/` | `cc(x,x) :- edge(x,_)` ; `cc(y,c) :- cc(x,c), edge(x,y)` (keep min `c`) |
@@ -50,6 +51,7 @@ over an identical kernel sequence.
 ## Where to start
 
 - New here — {doc}`quickstart`
+- On an ALCF JLSE node — {doc}`jlse`
 - Reproducing the paper — {doc}`reproducibility`
 - What this does *not* do — {doc}`limitations`
 

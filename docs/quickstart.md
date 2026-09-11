@@ -14,11 +14,13 @@ Full details and known pitfalls: {doc}`environment`.
 
 ## Build and run
 
+Make sure `nvcc --version` reports 12.4 or newer, then set `GPU_ARCH` for your
+device — `sm_80` for A100, `sm_90` for H100, or `native` to autodetect.
+
 ```bash
 git clone https://github.com/arsho/monolog
 cd monolog
 
-source environment/modules.sh     # module load cuda/12.9.1; GPU_ARCH=sm_80
 bash scripts/check_env.sh         # nvcc version, arch, VRAM, datasets, python deps
 
 cd tc_benchmark
@@ -29,6 +31,10 @@ make plot                         # -> results/charts/{total_time,breakdown}.{pn
 ```
 
 `sg_benchmark/` and `cc_benchmark/` build and run identically.
+
+On a cluster where CUDA comes from environment modules, load it first —
+`environment/modules.sh` does this and warns about toolchain conflicts. For the
+ALCF JLSE A100 nodes used in the paper, see {doc}`jlse`.
 
 Run a single binary directly:
 

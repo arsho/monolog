@@ -19,7 +19,7 @@ A single-GPU Datalog engine that runs a recursive query as one fused,
 device-resident kernel instead of a chain of relational-algebra operators.
 </p>
 
-[Queries](#queries) -
+[Applications](#applications) -
 [Versions](#versions) -
 [Build](#build) -
 [Documentation](#documentation) -
@@ -30,17 +30,17 @@ device-resident kernel instead of a chain of relational-algebra operators.
 
 </div>
 
-## Queries
+## Applications
 
-| Query | Directory | Rule |
-|-------|-----------|------|
-| **Transitive Closure** | [`tc_benchmark/`](tc_benchmark/) | `path(a,c) :- path(a,b), edge(b,c)` |
-| **Same Generation** | [`sg_benchmark/`](sg_benchmark/) | `sg(x,y) :- edge(p,x), edge(p,y), x≠y` ; `sg(x,y) :- edge(a,x), sg(a,b), edge(b,y)` |
-| **Weakly Connected Components** | [`cc_benchmark/`](cc_benchmark/) | `cc(x,x) :- edge(x,_)` ; `cc(y,c) :- cc(x,c), edge(x,y)` (keep min `c`) |
+| Application | Directory | Description |
+|-------------|-----------|-------------|
+| **Transitive Closure** | [`tc_benchmark/`](tc_benchmark/) | All-pairs reachability. Single-join recursion; the closure can reach a billion pairs. |
+| **Same Generation** | [`sg_benchmark/`](sg_benchmark/) | Nodes at equal depth from a common ancestor. Two-hop, two-join recursion. |
+| **Weakly Connected Components** | [`cc_benchmark/`](cc_benchmark/) | Component labeling by minimum node id. Also drives the streaming/incremental study. |
 
 ## Versions
 
-Each query is implemented four times. All four produce identical results,
+Each application is implemented four times. All four produce identical results,
 verified tuple for tuple by `make test`; they differ only in *how* the fixpoint
 is executed.
 
@@ -56,11 +56,11 @@ over an identical kernel sequence.
 
 ## Build
 
-Requires CUDA ≥ 12.4 (`v3` uses conditional graph nodes) and an NVIDIA GPU.
+Requires an NVIDIA GPU and CUDA ≥ 12.4 (`v3` uses conditional graph nodes).
+Set `GPU_ARCH` for your device: `sm_80` for A100, `sm_90` for H100, or `native`.
 
 ```bash
-source environment/modules.sh     # module load cuda/12.9.1; GPU_ARCH=sm_80
-bash scripts/check_env.sh
+bash scripts/check_env.sh         # nvcc version, arch, VRAM, datasets
 
 cd tc_benchmark
 make GPU_ARCH=sm_80 all           # build v0-v3
@@ -76,11 +76,10 @@ Full documentation is at
 
 ## Contribute
 
-Pull requests are welcome — documentation, bug fixes, new datasets, new queries.
-Open an issue first for anything substantial so we can agree on the approach.
-For questions or bug reports, post on the
-[issue tracker](https://github.com/arsho/monolog/issues) or start a thread on
-[GitHub Discussions](https://github.com/arsho/monolog/discussions).
+Pull requests are welcome — documentation, bug fixes, new datasets, new
+applications. Open an issue first for anything substantial so we can agree on
+the approach. For questions or bug reports, post on the
+[issue tracker](https://github.com/arsho/monolog/issues).
 
 ## License and authors
 
@@ -89,35 +88,21 @@ Distributed under the terms in [LICENSE](LICENSE). Contributors are listed in
 
 ## References
 
-The two GPU Datalog engines monolog is compared against. **MNMGDatalog** supplies
-the reference algorithm, ported here as each benchmark's `v0_reference/`.
-**GPUlog** is an external baseline, pinned and run by `make gpulog`.
+The GPU Datalog engines monolog is compared against:
 
-```
-@inproceedings{shovon2025mnmgdatalog,
-  title={Multi-Node Multi-GPU Datalog},
-  author={Shovon, Ahmedur Rahman and Sun, Yihao and Micinski, Kristopher and Gilray, Thomas and Kumar, Sidharth},
-  booktitle={Proceedings of the 2025 International Conference on Supercomputing (ICS '25)},
-  year={2025},
-  publisher={ACM},
-  doi={10.1145/3721145.3730431}
-}
+- [MNMGDatalog](https://github.com/harp-lab/MNMGDatalog) — [Multi-Node Multi-GPU Datalog](https://doi.org/10.1145/3721145.3730431), ICS '25. Supplies the reference algorithm, ported as each benchmark's `v0_reference/`.
+- [GPUlog / gdlog](https://github.com/harp-lab/gdlog) — [Optimizing Datalog for the GPU](https://doi.org/10.1145/3669940.3707274), ASPLOS '25. External baseline, pinned and run by `make gpulog`.
 
-@inproceedings{sun2025optimizing,
-  title={Optimizing Datalog for the GPU},
-  author={Sun, Yihao and Shovon, Ahmedur Rahman and Gilray, Thomas and Kumar, Sidharth and Micinski, Kristopher},
-  booktitle={Proceedings of the 30th ACM International Conference on Architectural Support for Programming Languages and Operating Systems (ASPLOS '25)},
-  pages={762--776},
-  year={2025},
-  publisher={ACM},
-  doi={10.1145/3669940.3707274}
-}
-```
+The CUDA features monolog builds on:
 
-| Engine | Source |
-|--------|--------|
-| MNMGDatalog | <https://github.com/harp-lab/MNMGDatalog> |
-| GPUlog (gdlog) | <https://github.com/harp-lab/gdlog> |
+- [CUDA Graphs](https://docs.nvidia.com/cuda/cuda-c-programming-guide/#cuda-graphs)
+- [Conditional graph nodes](https://docs.nvidia.com/cuda/cuda-c-programming-guide/#conditional-graph-nodes)
+- [Thrust](https://docs.nvidia.com/cuda/thrust/) (used by the `v0` reference)
+
+The graph collections the datasets come from:
+
+- [SNAP: Stanford Large Network Dataset Collection](https://snap.stanford.edu/data/)
+- [SuiteSparse Matrix Collection](https://sparse.tamu.edu/)
 
 ## Citation
 

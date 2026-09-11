@@ -41,7 +41,8 @@ if command -v nvcc >/dev/null 2>&1; then
         bad "nvcc $NVCC_VER is too old. v3 needs CUDA >= 12.4 for conditional graph nodes."
     fi
 else
-    bad "nvcc not on PATH. Run: source environment/modules.sh"
+    bad "nvcc not on PATH. Install the CUDA toolkit, or on a module-based
+        cluster load it first (see environment/modules.sh)."
 fi
 
 head_ "GPU"
