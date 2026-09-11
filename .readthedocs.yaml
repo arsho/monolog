@@ -17,17 +17,16 @@ build:
   os: ubuntu-24.04
   tools:
     python: "3.12"
-  jobs:
-    post_checkout:
-      # The graph datasets are large and irrelevant to the docs build.
-      - git sparse-checkout set --no-cone '/*' '!/data'
 
 sphinx:
   configuration: docs/conf.py
   fail_on_warning: false
 
+# PDF is deliberately not built. The docs contain relational-algebra and
+# typographic characters (join, set-difference, union, not-equal, accented
+# names) that Sphinx's default pdflatex engine cannot encode without extra
+# font configuration. EPUB is pure XML and renders them without special setup.
 formats:
-  - pdf
   - epub
 
 python:
