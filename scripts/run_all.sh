@@ -84,7 +84,7 @@ else
         echo "No gdlog checkout. Fetching the pinned baseline ..."
         bash scripts/setup_gdlog.sh
     fi
-    # A stale CMake cache silently drops the injected -std=c++17. See BASELINES.md.
+    # A stale CMake cache silently drops the injected -std=c++17. See baselines.md.
     rm -rf "${GDLOG_DIR:-third_party/gdlog}/build"
     for b in tc_benchmark sg_benchmark; do
         echo "--- $b"
@@ -104,6 +104,6 @@ Fresh results:
 
 Compare against the frozen published files in results/paper/. Expect run-to-run
 jitter in the timing columns; iteration counts and result sizes must match
-exactly. See docs/FIGURE_MAP.md for which file backs which table or figure, and
-docs/BASELINES.md for the GPUlog result-size cross-check.
+exactly. See docs/figure-map.md for which file backs which table or figure, and
+docs/baselines.md for the GPUlog result-size cross-check.
 EOF

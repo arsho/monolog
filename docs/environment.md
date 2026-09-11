@@ -48,7 +48,7 @@ export `GPU_ARCH` for your card.
 
 ## Container
 
-[`Dockerfile`](Dockerfile) builds an image with the toolchain and the Python
+[`environment/Dockerfile`](https://github.com/arsho/monolog/blob/main/environment/Dockerfile) builds an image with the toolchain and the Python
 charting dependencies:
 
 ```bash

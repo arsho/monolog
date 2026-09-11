@@ -17,7 +17,7 @@
 # vendored into this repository. It is only needed for `make gpulog`; the TC, SG
 # and WCC benchmarks run without it.
 #
-# If this repository is under git, prefer a submodule (see docs/BASELINES.md):
+# If this repository is under git, prefer a submodule (see docs/baselines.md):
 #   git submodule add https://github.com/harp-lab/gdlog third_party/gdlog
 #   git -C third_party/gdlog checkout $GDLOG_COMMIT
 #
@@ -57,7 +57,7 @@ if [[ "$ACTUAL" != "$GDLOG_COMMIT" ]]; then
 fi
 
 # A CMake cache from an earlier configure keeps the wrong C++ standard and makes
-# the harness's injected flags a no-op. This is gotcha #2 in docs/BASELINES.md.
+# the harness's injected flags a no-op. This is gotcha #2 in docs/baselines.md.
 if (( REBUILD )) && [[ -d "$DEST/build" ]]; then
     echo "Removing stale build directory $DEST/build"
     rm -rf "$DEST/build"
@@ -77,6 +77,6 @@ Run the comparison with:
   cd tc_benchmark && make GPU_ARCH=\${GPU_ARCH:-sm_80} gpulog REPEATS=3
   cd sg_benchmark && make GPU_ARCH=\${GPU_ARCH:-sm_80} gpulog REPEATS=3
 
-Then validate the run with the result-size cross-check in docs/BASELINES.md
+Then validate the run with the result-size cross-check in docs/baselines.md
 before reporting any timing.
 EOF

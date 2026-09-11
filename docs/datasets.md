@@ -1,6 +1,6 @@
 # Datasets
 
-All 13 graphs used by the paper are committed in [`../data/`](../data), so the
+All 13 graphs used by the paper are committed in [`data/`](https://github.com/arsho/monolog/tree/main/data), so the
 artifact reproduces offline with no downloads. They are carried over unmodified
 from the MNMGDatalog repository, which is the provenance of record for the
 conversions.
@@ -25,12 +25,12 @@ Synthetic graphs for smoke tests: `python3 data/generate_data.py`.
 
 The input is consumed **as given** — no deduplication, no symmetrization, no
 self-loop removal. This matters for the `.cedge` road networks; see
-[`BASELINES.md`](BASELINES.md#validating-a-gpulog-run-result-size-cross-check).
+[`baselines.md`](baselines.md#validating-a-gpulog-run-result-size-cross-check).
 
 ## The graphs
 
 `|E|` is the edge count in the `.bin`. Checksums are the first 16 hex digits of
-SHA-256; the full list is in [`../data/SHA256SUMS`](../data/SHA256SUMS).
+SHA-256; the full list is in [`data/SHA256SUMS`](https://github.com/arsho/monolog/blob/main/data/SHA256SUMS).
 
 ### Transitive closure (`tc_benchmark`)
 
@@ -91,7 +91,7 @@ For TC and SG the result hash set is allocated once as
 
 A graph not in that table falls back to the CLI `MULT` and may need tuning; an
 undersized table fails fast rather than rehashing. See
-[`LIMITATIONS.md`](LIMITATIONS.md#2-fixed-capacity-no-grow-and-rehash).
+[`limitations.md`](limitations.md#2-fixed-capacity-no-grow-and-rehash).
 
 ## Using your own graph
 

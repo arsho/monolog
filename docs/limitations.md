@@ -95,7 +95,7 @@ For TC and SG, both the tuple set *and* the iteration count must match.
   graphs contain self-edges `(v,v)`, and the two engines treat a self-derived path
   pair differently. Every other TC graph and all SG graphs agree to the tuple. A
   *large* or *new* divergence should be treated as a real error and investigated
-  — see [`BASELINES.md`](BASELINES.md).
+  — see [`baselines.md`](baselines.md).
 - **GPUlog is the one place we parse stdout.** It has no machine-readable output.
   All of our own binaries report through a `*_CSV` file.
 - GPUlog is built "with its default toolchain" plus an injected `-std=c++17`; a
@@ -124,7 +124,7 @@ For TC and SG, both the tuple set *and* the iteration count must match.
 ## 12. Portability
 
 Tested only on the environment recorded in
-[`../environment/ENVIRONMENT.md`](../environment/ENVIRONMENT.md): A100 `sm_80`,
+[`environment.md`](environment.md): A100 `sm_80`,
 CUDA 12.9.1, Linux, AMD EPYC 7532. `GPU_ARCH=native` and `sm_90` are expected to
 work but are not part of the published results. The shell harness assumes
 **bash** and GNU coreutils.

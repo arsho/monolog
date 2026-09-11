@@ -45,7 +45,7 @@
   `../results/paper/tc/` (`benchmark_*.csv`, `gpulog_*.csv`). Treat those as
   read-only; a re-run writes a fresh timestamped CSV into `results/` instead.
 - Speedups are always reported two ways: compute-only and end-to-end (total).
-- `../docs/FIGURE_MAP.md` maps each paper table/figure to the script and CSV that
+- `../docs/figure-map.md` maps each paper table/figure to the script and CSV that
   produced it — update it if you add or rename a figure.
 
 ## Comparing against GPUlog (gdlog, ASPLOS'25)

@@ -1,8 +1,8 @@
 # Figure and table map
 
 Every published number traced back to the command that produced it and the CSV
-it came from. Frozen CSVs live in [`../results/paper/`](../results/paper) and
-frozen figures in [`../results/paper/charts/`](../results/paper/charts); a re-run
+it came from. Frozen CSVs live in [`results/paper/`](https://github.com/arsho/monolog/tree/main/results/paper) and
+frozen figures in [`results/paper/charts/`](https://github.com/arsho/monolog/tree/main/results/paper/charts); a re-run
 writes a *new* timestamped file into the benchmark's own `results/` and never
 overwrites these.
 
@@ -30,7 +30,7 @@ benchmark, plus `common/<q>_core.cuh`.
 
 ### `tab:datalog-engines` — engine comparison
 
-Descriptive. See [`BASELINES.md`](BASELINES.md).
+Descriptive. See [`baselines.md`](baselines.md).
 
 ## Figures
 
@@ -65,7 +65,7 @@ across into `../sg_benchmark/results/`.
 
 Column used: `compute(10)` for our versions; `gpulog_time_s` for GPUlog.
 
-> Requires step 4 of [`REPRODUCIBILITY.md`](REPRODUCIBILITY.md#4-gpulog-comparison)
+> Requires step 4 of [`reproducibility.md`](reproducibility.md#4-gpulog-comparison)
 > to have run first, and the result-size cross-check to have passed.
 
 ### `fig:incremental` — streaming WCC

@@ -1,0 +1,10 @@
+# Documentation build dependencies (Read the Docs / local `make html`).
+# Independent of the repository's runtime requirements.txt, which is for charts.
+
+sphinx==8.1.3
+myst-parser==4.0.0
+sphinx-rtd-theme==3.0.2
+sphinx-copybutton==0.5.2
+
+# Required by the myst "linkify" extension (bare URLs become links).
+linkify-it-py==2.0.3

@@ -4,7 +4,7 @@ The 13 graphs used by the paper, plus a 10-edge smoke test. Committed so the
 artifact reproduces offline with no downloads.
 
 Full table (edge counts, which query uses which graph, checksums, capacity
-sizing): [`../docs/DATASETS.md`](../docs/DATASETS.md).
+sizing): [`../docs/datasets.md`](../docs/datasets.md).
 
 ## Format
 
@@ -36,7 +36,7 @@ shasum -a 256 -c SHA256SUMS
 - Input is consumed **as given**: no deduplication, no symmetrization, no
   self-loop removal. This is why GPUlog's TC counts differ slightly on the three
   `.cedge` road networks — see
-  [`../docs/BASELINES.md`](../docs/BASELINES.md#validating-a-gpulog-run-result-size-cross-check).
+  [`../docs/baselines.md`](../docs/baselines.md#validating-a-gpulog-run-result-size-cross-check).
 - Result relations (`*_tc.bin`, `*_sg.bin`, `*_cc.bin`) are written here when a
   run is not in `*_NO_OUTPUT=1` mode. They can reach ~17 GB and are gitignored;
   clear them with `make clean-output` from any benchmark directory.

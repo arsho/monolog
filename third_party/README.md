@@ -28,4 +28,4 @@ git -C third_party/gdlog checkout 65a6ee960ced8d04bc725ccdfa68f004f8479226
 An existing checkout elsewhere also works: `export GDLOG_DIR=/path/to/gdlog`.
 
 Build gotchas, the result-size cross-check, and why GPUlog is the one binary
-whose stdout we parse: [`../docs/BASELINES.md`](../docs/BASELINES.md).
+whose stdout we parse: [`../docs/baselines.md`](../docs/baselines.md).

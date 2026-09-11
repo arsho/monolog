@@ -9,7 +9,7 @@ streaming study, and the GPUlog comparison are covered.
 > **12.4+** (conditional graph nodes). GPUlog builds under 12.x/13.x once C++17
 > is forced — see [GPUlog comparison](#4-gpulog-comparison).
 >
-> Full environment record: [`../environment/ENVIRONMENT.md`](../environment/ENVIRONMENT.md).
+> Full environment record: [`environment.md`](environment.md).
 
 ## 0. Environment
 
@@ -30,7 +30,7 @@ python3 -m pip install -r requirements.txt   # matplotlib etc., for `make plot`
 
 Notes:
 
-- Datasets are already in [`../data/`](../data); nothing to download. Each
+- Datasets are already in [`data/`](https://github.com/arsho/monolog/tree/main/data); nothing to download. Each
   benchmark probes `DATA_DIR=${DATA_DIR:-<benchmark>/../data}`, so the top-level
   `data/` is found automatically. Override with `DATA_DIR=/path` on any `make`.
 - Build architecture: `GPU_ARCH=sm_80` for the A100. The default is `native`,
@@ -119,7 +119,7 @@ Charts are written as **both `.png` and `.pdf`** into each `results/charts/`.
 Plot the latest CSV automatically, or pass an explicit one with `CSV=<path>`.
 
 The figures and CSVs behind the *published* numbers are frozen under
-[`../results/paper/`](../results/paper) and are never overwritten by a re-run —
+[`results/paper/`](https://github.com/arsho/monolog/tree/main/results/paper) and are never overwritten by a re-run —
 compare against them rather than replacing them.
 
 ## 4. GPUlog comparison
@@ -141,7 +141,7 @@ The harness converts each `.bin` to the tab-separated text GPUlog expects (via
 the identical graph.
 
 **Before reporting any GPUlog timing, run the result-size cross-check** described
-in [`BASELINES.md`](BASELINES.md#validating-a-gpulog-run-result-size-cross-check).
+in [`baselines.md`](baselines.md#validating-a-gpulog-run-result-size-cross-check).
 Build gotchas (C++17 injection, stale build dir, `nvhpc` shadowing) are documented
 in the same file.
 
@@ -195,7 +195,7 @@ Check, in this order:
 3. **Right CUDA?** `nvcc --version` must be ≥ 12.4, and `module list` must show
    no `nvhpc` shadowing it.
 4. **Right capacity?** An overflow message means the dataset's `ds_mult` is too
-   small for this graph — see [`DATASETS.md`](DATASETS.md#capacity-sizing).
+   small for this graph — see [`datasets.md`](datasets.md#capacity-sizing).
 5. **Expected losses.** Fused SG *should* lose on ≤18-round graphs, and `+cond`
    *should* lose end-to-end on the few-round billion-pair TC closures. Those are
-   documented, not regressions — see [`LIMITATIONS.md`](LIMITATIONS.md#6-where-the-fused-versions-lose).
+   documented, not regressions — see [`limitations.md`](limitations.md#6-where-the-fused-versions-lose).
