@@ -19,29 +19,16 @@ A single-GPU Datalog engine that runs a recursive query as one fused,
 device-resident kernel instead of a chain of relational-algebra operators.
 </p>
 
-[Overview](#overview) -
 [Queries](#queries) -
 [Versions](#versions) -
 [Build](#build) -
 [Documentation](#documentation) -
-[Get Help](#get-help) -
 [Contribute](#contribute) -
-[Copyright Notice](#copyright-notice) -
-[License](#license) -
+[License](#license-and-authors) -
+[References](#references) -
 [Citation](#citation)
 
 </div>
-
-## Overview
-
-GPU Datalog engines execute each round of a recursive query as a chain of
-separate operator kernels — join, sort, unique, set-difference, merge — that
-rebuild the relation while the host drives the loop. monolog replaces that chain
-with one fused kernel over a persistent device-resident structure, where a single
-atomic write performs deduplication, novelty detection, and union at once. No
-sorting, no merging, no per-round allocation. Because the change count also stays
-in device memory, the whole loop can be replayed as a CUDA graph or executed from
-a single launch with a conditional graph node.
 
 ## Queries
 
@@ -87,27 +74,50 @@ make plot                         # -> results/charts/
 Full documentation is at
 [monolog.readthedocs.io](https://monolog.readthedocs.io/en/latest/).
 
-## Get Help
-
-Post an issue on the
-[issue tracker](https://github.com/arsho/monolog/issues), or start a thread on
-[GitHub Discussions](https://github.com/arsho/monolog/discussions).
-
 ## Contribute
 
 Pull requests are welcome — documentation, bug fixes, new datasets, new queries.
 Open an issue first for anything substantial so we can agree on the approach.
+For questions or bug reports, post on the
+[issue tracker](https://github.com/arsho/monolog/issues) or start a thread on
+[GitHub Discussions](https://github.com/arsho/monolog/discussions).
 
-## Copyright Notice
+## License and authors
 
-monolog Copyright (c) 2025, UChicago Argonne, LLC. All Rights Reserved.
+Distributed under the terms in [LICENSE](LICENSE). Contributors are listed in
+[AUTHORS](AUTHORS).
 
-This work was produced under contract DE-AC02-06CH11357 with the U.S. Department
-of Energy. See [AUTHORS](AUTHORS).
+## References
 
-## License
+The two GPU Datalog engines monolog is compared against. **MNMGDatalog** supplies
+the reference algorithm, ported here as each benchmark's `v0_reference/`.
+**GPUlog** is an external baseline, pinned and run by `make gpulog`.
 
-License for monolog can be found at [LICENSE](LICENSE).
+```
+@inproceedings{shovon2025mnmgdatalog,
+  title={Multi-Node Multi-GPU Datalog},
+  author={Shovon, Ahmedur Rahman and Sun, Yihao and Micinski, Kristopher and Gilray, Thomas and Kumar, Sidharth},
+  booktitle={Proceedings of the 2025 International Conference on Supercomputing (ICS '25)},
+  year={2025},
+  publisher={ACM},
+  doi={10.1145/3721145.3730431}
+}
+
+@inproceedings{sun2025optimizing,
+  title={Optimizing Datalog for the GPU},
+  author={Sun, Yihao and Shovon, Ahmedur Rahman and Gilray, Thomas and Kumar, Sidharth and Micinski, Kristopher},
+  booktitle={Proceedings of the 30th ACM International Conference on Architectural Support for Programming Languages and Operating Systems (ASPLOS '25)},
+  pages={762--776},
+  year={2025},
+  publisher={ACM},
+  doi={10.1145/3669940.3707274}
+}
+```
+
+| Engine | Source |
+|--------|--------|
+| MNMGDatalog | <https://github.com/harp-lab/MNMGDatalog> |
+| GPUlog (gdlog) | <https://github.com/harp-lab/gdlog> |
 
 ## Citation
 

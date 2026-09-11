@@ -133,3 +133,26 @@ The paper situates the work against `GPUjoin`, `INLjoin`, `Bjoin`, `Powerlog`,
 RedFox, RaSQL, RecStep, Soufflé, and RDFox. Those are cited from their published
 numbers and are **not** part of this artifact; only MNMGDatalog and GPUlog are
 executed on our hardware, on our graphs, for this comparison.
+
+## References
+
+```
+@inproceedings{shovon2025mnmgdatalog,
+  title={Multi-Node Multi-GPU Datalog},
+  author={Shovon, Ahmedur Rahman and Sun, Yihao and Micinski, Kristopher and Gilray, Thomas and Kumar, Sidharth},
+  booktitle={Proceedings of the 2025 International Conference on Supercomputing (ICS '25)},
+  year={2025},
+  publisher={ACM},
+  doi={10.1145/3721145.3730431}
+}
+
+@inproceedings{sun2025optimizing,
+  title={Optimizing Datalog for the GPU},
+  author={Sun, Yihao and Shovon, Ahmedur Rahman and Gilray, Thomas and Kumar, Sidharth and Micinski, Kristopher},
+  booktitle={Proceedings of the 30th ACM International Conference on Architectural Support for Programming Languages and Operating Systems (ASPLOS '25)},
+  pages={762--776},
+  year={2025},
+  publisher={ACM},
+  doi={10.1145/3669940.3707274}
+}
+```
