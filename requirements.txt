@@ -1,0 +1,24 @@
+# Charting and data-preparation dependencies only. Nothing here is on the timing
+# path: the benchmarks are pure CUDA/C++ and run without Python. These are needed
+# for `make plot`, `tests/plot_compute.py`, and the .bin <-> .txt converters.
+#
+#   python3 -m pip install -r requirements.txt
+#
+# Versions are the ones used to render the published figures.
+
+matplotlib==3.9.0
+numpy==2.0.1
+pandas==2.2.2
+
+# Transitive pins, recorded for an exact environment rebuild.
+contourpy==1.2.1
+cycler==0.12.1
+fonttools==4.53.1
+kiwisolver==1.4.5
+packaging==24.1
+pillow==10.4.0
+pyparsing==3.1.2
+python-dateutil==2.9.0.post0
+pytz==2024.1
+six==1.16.0
+tzdata==2024.1

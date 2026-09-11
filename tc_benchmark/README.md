@@ -1,0 +1,202 @@
+# TC Benchmark: four execution strategies for Datalog Transitive Closure
+
+Four single-GPU implementations of the same Datalog-style **Transitive Closure**
+fixpoint:
+
+```
+path(a, c) :- path(a, b), edge(b, c).
+```
+
+All four compute **identical TC size and iteration count**. They differ only in
+*how the fixpoint is executed* — that difference is the whole point of this
+benchmark.
+
+## The four versions (this is the core difference)
+
+| # | Name | Fixpoint machinery | Loop driver | Convergence test |
+|---|------|--------------------|-------------|------------------|
+| v0 | **mnmg (sort-merge)** | discrete iterative relational algebra: `get_join` ⋈ → `sort`+`unique` (dedup) → `set_difference` (∖) → `merge` (∪), with per-iteration `cudaMalloc`/`free` | host `while` | CPU: relation stopped growing |
+| v1 | **fused operators** | join + projection + dedup/union/difference **fused into one kernel** (`tc_expand` + one `atomicCAS` into a hash set); fixed pre-allocated buffers | host `while` | CPU: `new_count == 0` |
+| v2 | **fused + CUDA graph** | same fused kernel sequence | one iteration **captured into a CUDA graph** and replayed | **CPU** copies `new_count` and relaunches |
+| v3 | **fused + conditional graph** | same fused kernel sequence | the whole loop is a CUDA graph **conditional WHILE node** — one `cudaGraphLaunch` | **GPU**: `cudaGraphSetConditional(new_count > 0)` |
+
+- **v0 → v1** is an *algorithm* change: the original engine's materialized
+  relational-algebra operators (sort-merge) are replaced by a **single fused
+  kernel**. One `atomicCAS` insert into a pair hash set does dedup **and** the
+  "is this fact new?" test at once (what `unique` + `set_difference` did together).
+- **v1 → v2 → v3** is an *execution-strategy* change over the same kernels:
+  host loop → replayed CUDA graph (CPU still checks convergence) → on-GPU
+  conditional loop (convergence checked on the device, zero per-iteration CPU).
+
+The per-iteration kernel sequence for v1/v2/v3 is identical; sizes live in
+**device memory** (`d_frontier_size`, `d_new_count`) and the kernels read them at
+launch, over **fixed pre-allocated buffers** — which is exactly what lets v2
+replay one captured graph and v3 drive the loop entirely on-GPU. v3's WHILE
+condition is the fixpoint termination test `new_count > 0`, evaluated on the GPU
+via `cudaGraphSetConditional` (v2 evaluates the same test on the CPU).
+
+> Note: v0 also runs semi-naïve evaluation — the difference is *representation +
+> operators* (sorted relation + discrete RA operators) vs *fused kernel + hash
+> set*, not the fixpoint strategy itself.
+
+## Results (JLSE A100-PCIE-40GB, CUDA 12.9.1, median of 3 runs)
+
+End-to-end **total time** (ms) with total-time speedup (`t↑`) and **compute-only**
+speedup (`c↑`) vs MNMGDatalog. All versions produce identical TC size, iteration
+count, and byte-identical tuple sets (`make test`).
+
+![End-to-end total time (log)](results/charts/total_time.png)
+
+| Dataset | # Iter | # TC | mnmg | fused | +graph | +cond | fused t↑/c↑ | +graph t↑/c↑ | +cond t↑/c↑ |
+|---------|-------:|-----:|-----:|------:|-------:|------:|:-----------:|:------------:|:-----------:|
+| OL.cedge (`data_7035`)        |  64 | 146,120       | 25.7 | 4.9 | 4.4 | 3.4 | 5.3/7.1 | 5.9/8.8 | 7.5/13.2 |
+| TG.cedge (`data_23874`)       |  58 | 481,121       | 25.1 | 6.0 | 5.8 | 5.1 | 4.2/7.3 | 4.3/7.4 | 4.9/9.5 |
+| SF.cedge (`data_223001`)      | 287 | 80,498,014    | 3,477 | 240 | 228 | 229 | 14.5/26.7 | 15.2/28.4 | 15.2/29.1 |
+| fe_body (`data_163734`)       | 188 | 156,120,489   | 5,117 | 584 | 594 | 595 | 8.8/13.4 | 8.6/12.8 | 8.6/12.9 |
+| p2p-Gnutella31 (`data_147892`)|  31 | 884,179,859   | 6,452 | 3,871 | 3,799 | 4,170 | 1.7/2.0 | 1.7/2.0 | 1.5/2.0 |
+| vsp_finan                     | 520 | 910,070,918   | 83,124 | 3,530 | 3,526 | 3,872 | 23.6/35.4 | 23.6/35.3 | 21.5/35.4 |
+
+Per-phase breakdown (absolute stacked — bar height = total time in ms; phases:
+file IO, data transfer = H2D+D2H, setup, graph build, compute). A **broken y-axis**
+per dataset shows `mnmg`'s true (large) total in the top slice while the zoomed
+bottom makes the fused versions' composition readable.
+
+![Per-phase total-time breakdown (broken y-axis)](results/charts/breakdown.png)
+
+Reading the results:
+
+- **Fusion vs sort-merge is the big win** — up to 35× in **compute** (`c↑`),
+  up to 24× end-to-end. It grows with iteration count: `vsp_finan` (520 iters) →
+  ~35× compute, because mnmg re-sorts/merges a ~910 M-tuple relation every round
+  while the fused hash set is flat cost per fact.
+- **CUDA graph (+graph)** improves **compute** on every launch-bound graph
+  (OL 7.1→8.8, TG 7.3→7.4, SF 26.7→28.4) and never hurts total time; **+cond**
+  additionally removes the per-iteration host round-trip and gives the **best
+  compute** on the many-short-round graphs (OL 13.2×, TG 9.5×, SF 29.1×).
+- **On the largest closures, `+graph`/`fused` win end-to-end, not `+cond`.** For
+  fe_body, p2p-Gnutella31, and vsp_finan the non-compute time is dominated by a
+  one-shot 17–21 GB `setup` memset and the D2H of hundreds of millions of tuples.
+  `+cond` also pays a much larger setup on the billion-pair graphs (~330 ms vs
+  ~12 ms for the others, to init its conditional-graph state), which over so
+  few/heavy rounds isn't repaid — so `+graph` or `fused` posts the best total
+  (e.g. vsp_finan 23.6× vs +cond 21.5×).
+- **Timing note:** `D2H` times only the device→host copy for every version; the
+  fused versions' one-shot result compaction is counted in `compute` (mirroring
+  mnmg, which keeps its result dense inside the fixpoint), so the transfer band is
+  apples-to-apples.
+- **mnmg (v0) validates against the source engine**: `fe_body` = 5.1 s,
+  `vsp_finan` = 83.1 s — the expected regime for discrete sort-merge RA.
+
+Charts are written to `results/charts/` by `make plot`; regenerate with
+`make benchmark && make plot`. The exact figures and CSVs behind the published
+numbers are frozen at [`../results/paper/`](../results/paper) and are never
+overwritten by a re-run.
+
+## Build & run
+
+**v3 needs CUDA 12.4+** (conditional graph nodes); `cuda/12.9.1` is recommended.
+
+```shell
+module load cuda/12.9.1               # 12.3.0 is too old for v3
+cd MNMGDatalog/tc_benchmark
+make GPU_ARCH=sm_80 all               # A100 = sm_80 (H100 = sm_90; or GPU_ARCH=native)
+
+make test                             # correctness: v1-v3 tuples identical to MNMGDatalog
+make benchmark REPEATS=3              # times all four, writes results/*.csv
+make plot                             # -> results/charts/{total_time,breakdown}.{png,pdf}
+```
+
+### Compare against GPUlog (gdlog, ASPLOS'25)
+
+GPUlog is a separate state-of-the-art GPU Datalog engine (HISA range-indexed
+relations). We compare its TC fixpoint time against ours on the **identical**
+graphs. Place the `gdlog` checkout as a sibling of this repo (or set `GDLOG_DIR`),
+then:
+
+```shell
+GDLOG_DIR=/path/to/gdlog make gpulog REPEATS=3   # builds gdlog if needed
+# -> results/gpulog_<ts>.csv : tool,name,dataset,rows,gpulog_tc,gpulog_time_s,...
+```
+
+`tests/gpulog_compare.sh` feeds GPUlog the same edges (converting each `.bin` to a
+tab-separated `.txt` via `tests/bin_to_txt.py` when a `.txt` is absent), runs its
+`TC` binary with eager buffer management (`EBM=0`, its best mode), and records the
+reported `Path counts` and `TC time` (its fixpoint compute, comparable to our
+`compute` column). GPUlog covers TC and SG (not WCC).
+
+Notes:
+- No `gcc` module needed; the system compiler builds this `-std=c++17` code.
+- Single binary run: `./v1_baseline/tc_v1.out <data.bin> [capacity_mult] [repeats] [frontier_slots]`.
+- Each binary prints a CSV row to stdout and, when `TC_CSV=<file>` is set, writes
+  the same 15-column row to that file. `benchmark.sh`/`verify.sh` read the
+  **`TC_CSV` file** (never parse stdout), so results are immune to stray output or
+  `awk`/`grep` differences across environments.
+- **Result output:** every version (v0–v3) writes its final TC to
+  `<data>_<version>_tc.bin` (binary int32 `(src,dst)` pairs, the MNMGDatalog
+  `_tc.bin` format; convert with `binary_file_utils.py bin_to_txt`). The write is
+  done once, after timing, so it does not affect the reported times. Set
+  `TC_NO_OUTPUT=1` to skip it (e.g. for pure timing or the huge closures).
+- **Phase timing:** `H2D` = input transfer (edges host$\to$device); `D2H` = output
+  transfer (final TC relation device$\to$host, always measured); `fileio` = disk
+  read of the input **plus** the disk write of the result file (when written).
+  All are in `total`. `D2H` is unaffected by `TC_NO_OUTPUT`; only the `fileio`
+  write component is skipped when no output is written.
+- **D2H is apples-to-apples, and phases are attributed symmetrically:** v1–v3
+  **stream-compact** the sparse result set into a dense array of exactly the TC
+  tuples on the device, then copy `TC × 8` bytes to the host — the same amount
+  MNMGDatalog copies from its dense `t_full`. `D2H` times **only** the
+  `cudaMemcpy` (device$\to$host) for every version; the host receive-buffer
+  `malloc` is allocation, not transfer, and is excluded. The v1–v3 **compaction
+  kernel** (plus its device buffers) is result *materialization* and is counted in
+  `compute`, mirroring MNMGDatalog which keeps its result dense *inside* the timed
+  fixpoint. This removes the earlier artifact where compaction/alloc overhead
+  inflated the v1–v3 "data transfer" band on small graphs.
+- **`make benchmark` writes no result files by default** (`TC_NO_OUTPUT=1`): the
+  GPU$\to$CPU transfer is still timed as `D2H`, so numbers are identical while
+  producing \emph{zero} multi-GB `_tc.bin` files. In this mode `fileio` is the
+  input read only. Pass `BENCH_KEEP_OUTPUT=1` to also write (and keep) the result
+  files, in which case `fileio` includes the write for every version.
+- Free space anytime with `make clean-output` (removes `*_tc.bin` + results CSV/
+  charts) or `make distclean` (that plus binaries).
+- **`make test` checks the actual tuples:** it runs every version, dumps all
+  discovered `(src,dst)` pairs, sorts them, and diffs v1/v2/v3 against
+  MNMGDatalog (v0) — a version passes only if its full tuple set is identical to
+  v0's (not merely the same count).
+
+## Memory / capacity
+
+The result hash set is sized `next_pow2(n_edges * capacity_mult)` and must be
+**≥ ~2× the TC size** (else the run fails fast with an overflow message). Frontier
+buffers are decoupled (`min(result_cap, 2^28)` slots each), so only the set grows
+with TC — letting even billion-pair closures fit 40 GB. `benchmark.sh` picks a
+sensible per-dataset `capacity_mult` automatically (`ds_mult`). An over-sized
+capacity inflates `setup` (a `cudaMemset`) and peak memory but not `compute`.
+
+## Files
+
+```
+common/tc_core.cuh       shared kernels, IO, setup/teardown, main (v1-v3)
+v0_reference/tc_v0.cu    mnmg sort-merge (discrete iterative RA) reference
+v1_baseline/tc_v1.cu     fused operators, host while-loop
+v2_cudagraph/tc_v2.cu    fused operators, replayed CUDA graph (CPU condition)
+v3_conditional/tc_v3.cu  fused operators, conditional WHILE node (GPU condition)
+tests/verify.sh          correctness: v1-v3 TC tuples == MNMGDatalog (content diff)
+tests/benchmark.sh       timing + breakdown + speedups, writes results CSV
+tests/plot_results.py    two charts (total time, per-phase breakdown)
+tests/make_flowchart.py  loop-control flowchart (results/charts/workflow.*)
+results/charts/          committed charts rendered in this README
+Makefile
+```
+
+## Why the fused versions beat a general engine (e.g. GPUlog)
+
+They compute the **same reachability/TC**, but this is a specialized **single
+rule**, not a general Datalog engine. A general engine (GPUlog/Soufflé) compiles
+each rule to **discrete relational-algebra operators** over a sorted, range-indexed
+relation (GPUlog's HISA — the paper reports join ≈ 39%, merge ≈ 42% of runtime).
+v1–v3 **fuse** join + projection + dedup/union/difference into one kernel with a
+hash set, doing far less work (no sort/merge/index) at the cost of more memory
+(sparse hash set). The **execution-strategy ideas (CUDA graph, conditional loop)
+transfer** to a general engine; the fused hash-set storage is TC-specific (it
+works only because the derived tuple *is* the whole key — general multi-column
+joins need a range-indexed structure like HISA).

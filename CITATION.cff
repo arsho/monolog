@@ -1,0 +1,69 @@
+cff-version: 1.2.0
+title: "monolog: fused, GPU-resident fixpoint evaluation for recursive graph queries"
+message: "If you use this software or its results, please cite the paper below."
+type: software
+license: BSD-3-Clause
+repository-code: "https://github.com/arsho/monolog"
+abstract: >-
+  monolog runs a recursive Datalog round as a single fused CUDA kernel over a
+  persistent, device-resident data structure instead of a chain of separate
+  relational-algebra operators. One atomic write performs deduplication, novelty
+  detection, and union at once, removing intermediate materialization,
+  relation-wide sorting and merging, and per-round temporary allocation. Because
+  the fixpoint state and the change count stay on the device, the whole loop can
+  be replayed as a CUDA graph or executed from a single launch with a conditional
+  CUDA graph node. This repository is the single-GPU artifact for the paper: four
+  execution strategies for each of transitive closure, same generation, and
+  weakly connected components, plus the datasets, scripts, environment, and
+  frozen results used to compare against the MNMGDatalog and GPUlog engines.
+keywords:
+  - GPU
+  - recursive queries
+  - transitive closure
+  - connected components
+  - CUDA graphs
+  - kernel fusion
+  - incremental evaluation
+authors:
+  - family-names: Shovon
+    given-names: "Ahmedur Rahman"
+    email: ashovon@anl.gov
+    affiliation: "Argonne National Laboratory"
+  - family-names: Pereira
+    given-names: Romain
+    affiliation: "Argonne National Laboratory"
+  - family-names: Sun
+    given-names: Yihao
+    affiliation: "Utah State University"
+  - family-names: Saif
+    given-names: Farhan
+    affiliation: "University of Illinois Chicago"
+  - family-names: Kumar
+    given-names: Sidharth
+    affiliation: "University of Illinois Chicago"
+  - family-names: Perarnau
+    given-names: Swann
+    affiliation: "Argonne National Laboratory"
+preferred-citation:
+  type: article
+  title: "Accelerating GPU Datalog with Kernel Fusion"
+  year: 2025
+  authors:
+    - family-names: Shovon
+      given-names: "Ahmedur Rahman"
+      affiliation: "Argonne National Laboratory"
+    - family-names: Pereira
+      given-names: Romain
+      affiliation: "Argonne National Laboratory"
+    - family-names: Sun
+      given-names: Yihao
+      affiliation: "Utah State University"
+    - family-names: Saif
+      given-names: Farhan
+      affiliation: "University of Illinois Chicago"
+    - family-names: Kumar
+      given-names: Sidharth
+      affiliation: "University of Illinois Chicago"
+    - family-names: Perarnau
+      given-names: Swann
+      affiliation: "Argonne National Laboratory"
