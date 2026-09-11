@@ -2,7 +2,7 @@
 # Copyright 2025 UChicago Argonne, LLC.
 # (c.f. AUTHORS, LICENSE)
 #
-# This file is part of the monolog project.
+# This file is part of the Monolog project.
 # For more info, see https://github.com/arsho/monolog
 #
 # SPDX-License-Identifier: BSD-3-Clause

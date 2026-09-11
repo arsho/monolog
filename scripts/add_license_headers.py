@@ -3,12 +3,12 @@
 # Copyright 2025 UChicago Argonne, LLC.
 # (c.f. AUTHORS, LICENSE)
 #
-# This file is part of the monolog project.
+# This file is part of the Monolog project.
 # For more info, see https://github.com/arsho/monolog
 #
 # SPDX-License-Identifier: BSD-3-Clause
 # ******************************************************************************
-"""Insert (or refresh) the monolog copyright header at the top of source files.
+"""Insert (or refresh) the Monolog copyright header at the top of source files.
 
 Idempotent: a file that already carries the header is left untouched. Shebang
 lines and Python encoding declarations are preserved as the first line(s).
@@ -24,14 +24,14 @@ With no paths, walks the repository root and covers *.cu, *.cuh, *.py, *.sh.
 import os
 import sys
 
-MARKER = "This file is part of the monolog project."
+MARKER = "This file is part of the Monolog project."
 
 C_HEADER = """\
 /*******************************************************************************
  * Copyright 2025 UChicago Argonne, LLC.
  * (c.f. AUTHORS, LICENSE)
  *
- * This file is part of the monolog project.
+ * This file is part of the Monolog project.
  * For more info, see https://github.com/arsho/monolog
  *
  * SPDX-License-Identifier: BSD-3-Clause
@@ -43,7 +43,7 @@ HASH_HEADER = """\
 # Copyright 2025 UChicago Argonne, LLC.
 # (c.f. AUTHORS, LICENSE)
 #
-# This file is part of the monolog project.
+# This file is part of the Monolog project.
 # For more info, see https://github.com/arsho/monolog
 #
 # SPDX-License-Identifier: BSD-3-Clause

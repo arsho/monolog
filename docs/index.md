@@ -1,9 +1,9 @@
-# monolog
+# Monolog
 
 Single-GPU Datalog engine that evaluates a recursive query as one fused,
 device-resident kernel instead of a chain of relational-algebra operators.
 
-`monolog` implements three recursive graph applications — transitive closure,
+Monolog implements three recursive graph applications — transitive closure,
 same generation, and weakly connected components — four different ways each, so
 the cost of *how* a fixpoint is executed can be measured in isolation. All four
 versions produce identical results, verified tuple for tuple.

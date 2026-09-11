@@ -1,6 +1,6 @@
 <div align="center">
 
-# monolog
+# Monolog
 
 <p align="center">
   <a href="https://monolog.readthedocs.io/en/latest/">
@@ -88,16 +88,15 @@ Distributed under the terms in [LICENSE](LICENSE). Contributors are listed in
 
 ## References
 
-The GPU Datalog engines monolog is compared against:
+The GPU Datalog engines Monolog is compared against:
 
-- [MNMGDatalog](https://github.com/harp-lab/MNMGDatalog) — [Multi-Node Multi-GPU Datalog](https://doi.org/10.1145/3721145.3730431), ICS '25. Supplies the reference algorithm, ported as each benchmark's `v0_reference/`.
-- [GPUlog / gdlog](https://github.com/harp-lab/gdlog) — [Optimizing Datalog for the GPU](https://doi.org/10.1145/3669940.3707274), ASPLOS '25. External baseline, pinned and run by `make gpulog`.
+- [MNMGDatalog](https://github.com/harp-lab/MNMGDatalog) — [Multi-Node Multi-GPU Datalog](https://doi.org/10.1145/3721145.3730431), ICS '25.
+- [GPUlog / gdlog](https://github.com/harp-lab/gdlog) — [Optimizing Datalog for the GPU](https://doi.org/10.1145/3669940.3707274), ASPLOS '25.
 
-The CUDA features monolog builds on:
+The CUDA features Monolog builds on:
 
 - [CUDA Graphs](https://docs.nvidia.com/cuda/cuda-c-programming-guide/#cuda-graphs)
 - [Conditional graph nodes](https://docs.nvidia.com/cuda/cuda-c-programming-guide/#conditional-graph-nodes)
-- [Thrust](https://docs.nvidia.com/cuda/thrust/) (used by the `v0` reference)
 
 The graph collections the datasets come from:
 
@@ -106,7 +105,7 @@ The graph collections the datasets come from:
 
 ## Citation
 
-If you use monolog in your work, please cite:
+If you use Monolog, please cite:
 
 ```
 @inproceedings{shovon2026accelerating,

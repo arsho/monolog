@@ -2,13 +2,13 @@
 # Copyright 2025 UChicago Argonne, LLC.
 # (c.f. AUTHORS, LICENSE)
 #
-# This file is part of the monolog project.
+# This file is part of the Monolog project.
 # For more info, see https://github.com/arsho/monolog
 #
 # SPDX-License-Identifier: BSD-3-Clause
 # ******************************************************************************
 #
-# Container image for building and running the monolog benchmarks.
+# Container image for building and running the Monolog benchmarks.
 #
 #   docker build -t monolog -f environment/Dockerfile .
 #   docker run --gpus all -it --rm -v "$PWD:/opt/monolog" monolog

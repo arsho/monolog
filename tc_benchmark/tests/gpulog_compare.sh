@@ -3,7 +3,7 @@
 # Copyright 2025 UChicago Argonne, LLC.
 # (c.f. AUTHORS, LICENSE)
 #
-# This file is part of the monolog project.
+# This file is part of the Monolog project.
 # For more info, see https://github.com/arsho/monolog
 #
 # SPDX-License-Identifier: BSD-3-Clause
@@ -26,7 +26,7 @@
 #     REPEATS : timed runs per dataset (default 3; min time kept)
 # Env:
 #   GDLOG_DIR : gdlog checkout. Default probe order:
-#                 ../third_party/gdlog  (the pinned submodule shipped with monolog)
+#                 ../third_party/gdlog  (the pinned submodule shipped with Monolog)
 #                 ../../gdlog, ../../../gdlog, ~/gdlog  (external sibling checkouts)
 #   GPU_ARCH  : passed to the gdlog build if it must be built (default sm_80)
 #   EBM       : GPUlog eager-buffer-management flag, 0=on (best, default), 1=off

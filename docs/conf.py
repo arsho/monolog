@@ -2,12 +2,12 @@
 # Copyright 2025 UChicago Argonne, LLC.
 # (c.f. AUTHORS, LICENSE)
 #
-# This file is part of the monolog project.
+# This file is part of the Monolog project.
 # For more info, see https://github.com/arsho/monolog
 #
 # SPDX-License-Identifier: BSD-3-Clause
 # ******************************************************************************
-"""Sphinx configuration for the monolog documentation.
+"""Sphinx configuration for the Monolog documentation.
 
 Build locally:
 
@@ -19,7 +19,7 @@ import datetime
 
 # -- Project information -----------------------------------------------------
 
-project = "monolog"
+project = "Monolog"
 author = "Ahmedur Rahman Shovon, Romain Pereira, Swann Perarnau"
 copyright = f"{datetime.date.today().year}, UChicago Argonne, LLC"
 release = "1.0.0"
@@ -62,8 +62,8 @@ exclude_patterns = [
 # -- HTML output -------------------------------------------------------------
 
 html_theme = "sphinx_rtd_theme"
-html_title = "monolog"
-html_short_title = "monolog"
+html_title = "Monolog"
+html_short_title = "Monolog"
 
 html_theme_options = {
     "collapse_navigation": False,
