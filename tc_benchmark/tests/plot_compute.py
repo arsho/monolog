@@ -40,6 +40,10 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 plt.rcParams.update({
+    "font.family": "serif",
+    "font.serif": ["Times"],
+    "pdf.fonttype": 42,
+    "ps.fonttype": 42,    
     "font.size": 29,
     "axes.labelsize": 29,
     "xtick.labelsize": 24,

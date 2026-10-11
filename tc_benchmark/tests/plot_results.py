@@ -31,6 +31,10 @@ import matplotlib.pyplot as plt
 
 # Larger default fonts for readable charts.
 plt.rcParams.update({
+    "font.family": "serif",
+    "font.serif": ["Times"],
+    "pdf.fonttype": 42,
+    "ps.fonttype": 42,
     "font.size": 13,
     "axes.titlesize": 13,
     "axes.labelsize": 13,
